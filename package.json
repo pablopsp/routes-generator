@@ -1,0 +1,20 @@
+{
+    "name": "routes-generator",
+    "version": "0.0.0",
+    "description": "Proyecto generador de rutas a partir de marcadores situados en un mapa.",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/pablopsp/routes-generator.git"
+    },
+    "author": "Pablo Silió",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/pablopsp/routes-generator/issues"
+    },
+    "homepage": "https://github.com/pablopsp/routes-generator#readme"
+  }
+  
