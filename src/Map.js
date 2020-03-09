@@ -1,6 +1,7 @@
 import React, {
   Component
 } from 'react'
+import Sidebar from './Sidebar';
 
 const mapStyle = {
   position: 'relative',
@@ -15,23 +16,29 @@ class GoogleMap extends Component {
     var map = new window.google.maps.Map(document.getElementById('map'), mapOptions);
 
     if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const currentPosition = new window.google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        map.setCenter(currentPosition);
-      });
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const currentPosition = new window.google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+          map.setCenter(currentPosition);
+        },
+        err => {
+          console.error(err)
+          map.setCenter(new window.google.maps.LatLng(40.416775, -3.70379))
+          map.setZoom(6);
+        }
+      );
     } else {
       console.error("Geolocation not supported");
-      map.setZoom(7);
+      map.setCenter(new window.google.maps.LatLng(40.416775, -3.70379))
+      map.setZoom(6);
     }
   }
 
   render() {
-    return ( <
-      div id = 'map'
-      style = {
-        mapStyle
-      }
-      /> 
+    return (<>
+      <div id = 'map' style = {mapStyle}/>
+      <Sidebar></Sidebar>
+    </>
     );
   }
 }
@@ -136,3 +143,17 @@ var mapOptions = {
     }
   ]
 };
+
+
+
+//esto sirve por ejemplo, poner la calle y que te devuelva la posicion, hace falta key
+// var geocoder = new window.google.maps.Geocoder();
+// geocoder.geocode({
+//       'address': "Madrid"
+//     }, function (results, status) {
+//       if (status === 'OK') {
+//         map.setCenter(results[0].geometry.location);
+//         map.setZoom(8)
+//       } else {
+//         console.error('Geocode was not successful for the following reason: ' + status);
+//       }
