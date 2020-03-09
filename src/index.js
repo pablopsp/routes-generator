@@ -1,5 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MyMapComponent from './App';
+import GoogleMap from './App';
 
-ReactDOM.render(<MyMapComponent isMarkerShown />, document.getElementById('root'));
+ReactDOM.render(<GoogleMap />, document.getElementById('root'));
