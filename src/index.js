@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import GoogleMap from './Map';
+import React from "react";
+import ReactDOM from "react-dom";
+import MainContainer from "./MainContainer";
 
-ReactDOM.render(<GoogleMap />, document.getElementById('root'));
+ReactDOM.render(<MainContainer />, document.getElementById("root"));
