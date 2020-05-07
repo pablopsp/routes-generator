@@ -4,7 +4,6 @@ import Sidebar from "../sidebar/sidebar";
 
 import './main_container.css';
 
-
 class MainContainer extends Component {
   constructor(props) {
     super(props);

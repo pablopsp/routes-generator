@@ -3,11 +3,13 @@ import React, { Component } from "react";
 
 import './sidebar.css';
 
-class Sidebar extends Component {  
+class Sidebar extends Component {
   render() {
     return (
       <div className={this.props.sidebarClass}>
-        <p>Holiwis</p>
+        <div className="info-container">
+          <p>Holiwis</p>
+        </div>
       </div>
     );
   }
