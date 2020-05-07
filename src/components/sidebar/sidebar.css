@@ -1,0 +1,39 @@
+.sidebar {
+    position: absolute;
+    display: contents;
+    height: 100%;
+    width: 25%;
+    background-color: blue;
+    display: block;
+    animation: sidebarAnim 1s;
+}
+
+@keyframes sidebarAnim {
+    0% {
+        width: 0px;
+    }
+
+    100% {
+        width: 25%;
+    }
+}
+
+.sidebarClosed{
+    position: absolute;
+    display: none;
+    height: 100%;
+    width: 0px;
+    background-color: blue;
+    animation: sidebarCloseAnim 1s;
+}
+
+@keyframes sidebarCloseAnim {
+    0% {
+        width: 25%;
+    }
+
+    100% {
+        width: 0px;
+        display: none;
+    }
+}

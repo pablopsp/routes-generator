@@ -1,0 +1,68 @@
+.arrowBtn {
+    position: absolute;
+    margin-top: 25px;
+    animation: arrowAnim 1s ease;
+}
+
+@keyframes arrowAnim {
+    0% {
+        left: 25%;
+    }
+
+    100% {
+        left: 0;
+    }
+}
+
+.arrowNavWithSideBar {
+    position: absolute;
+    margin-top: 25px;
+    left: 25%;
+    animation: arrowSideAnim 1s ease;
+}
+
+@keyframes arrowSideAnim {
+    0% {
+        left: 0;
+    }
+
+    100% {
+        left: 25%;
+    }
+}
+
+.mapStyle {
+    position: relative;
+    overflow: hidden;
+    width: 100% !important;
+    right: 0;
+    animation: mapAnim 1s ease;
+}
+
+@keyframes mapAnim {
+    0% {
+        width: 75%;
+    }
+
+    100% {
+        width: 100%;
+    }
+}
+
+.mapStyleWithSideBar {
+    position: relative;
+    overflow: hidden;
+    width: 75% !important;
+    right: 0;
+    animation: mapSideAnim 1s ease;
+}
+
+@keyframes mapSideAnim {
+    0% {
+        width: 100%;
+    }
+
+    100% {
+        width: 75%;
+    }
+}

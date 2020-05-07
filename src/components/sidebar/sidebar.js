@@ -1,17 +1,14 @@
 import React, { Component } from "react";
 
-class Sidebar extends Component {
-  constructor(props) {
-    super(props);
-  }
-  componentDidMount() {}
 
+import './sidebar.css';
+
+class Sidebar extends Component {  
   render() {
     return (
-      <>
+      <div className={this.props.sidebarClass}>
         <p>Holiwis</p>
-
-      </>
+      </div>
     );
   }
 }
