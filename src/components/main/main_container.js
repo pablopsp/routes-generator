@@ -3,6 +3,8 @@ import { Map, GoogleApiWrapper, Marker } from "google-maps-react";
 import EventInfoWindow from "../infowindowhandler/info_window_handler"
 import Sidebar from "../sidebar/sidebar";
 
+import starterMarker from '../../assets/iconfinder_Map-Marker-Ball-Azure_73012.png'
+import defaultMarker from '../../assets/iconfinder_Map-Marker-Ball-Pink_73017.png'
 import './main_container.css';
 
 class MainContainer extends Component {
@@ -59,9 +61,9 @@ class MainContainer extends Component {
     const coords = this.state.infoWindowPosition;
     const type = e.target.value;
 
-    const newMarker = {type: type, position: coords}
+    const newMarker = { type: type, position: coords }
     type === "starter" ? this.state.markers.unshift(newMarker) : this.state.markers.push(newMarker);
-    this.setState({showingInfoWindow: false});
+    this.setState({ showingInfoWindow: false });
   }
 
   onMarkerClick(props, marker, e) {
@@ -92,12 +94,16 @@ class MainContainer extends Component {
               <button value="starter" className="infoWindowButton" onClick={this.addMarker}>Añadir nuevo punto de inicio</button>
             </div>
           </EventInfoWindow>
-          
+
           {_markers.map((marker, i) => {
             return <Marker
-              key={marker.type+i}
+              key={marker.type + i}
               onClick={this.onMarkerClick}
               position={marker.position}
+              icon={{
+                url: marker.type === "starter" ? starterMarker : defaultMarker,
+                scaledSize: new this.props.google.maps.Size(30, 30)
+              }}
             />
           })}
         </Map>
