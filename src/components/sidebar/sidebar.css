@@ -2,8 +2,6 @@
     position: absolute;
     height: 100%;
     width: 25%;
-    background-color: blue;
-    display: block;
     animation: sidebarAnim 1s;
 }
 
@@ -19,9 +17,9 @@
 
 .sidebarClosed{
     position: absolute;
+    display: none;
     height: 100%;
     width: 0px;
-    background-color: blue;
     animation: sidebarCloseAnim 1s;
 }
 
