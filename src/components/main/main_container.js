@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Map, GoogleApiWrapper, Marker } from "google-maps-react";
+
 import EventInfoWindow from "../infowindowhandler/info_window_handler"
 import Sidebar from "../sidebar/sidebar";
 
@@ -15,9 +16,15 @@ class MainContainer extends Component {
       initialPosition: { lat: 40.416775, lng: -3.70379 },
       currentPosition: {},
       currentZoom: 6,
+
       isSidebarDisplayed: false,
+
       showingInfoWindow: false,
       infoWindowPosition: null,
+
+      showingInfoMarker: false,
+      infoMarkerPosition: null,
+
       markers: []
     };
 
@@ -25,6 +32,7 @@ class MainContainer extends Component {
     this.handleMapClick = this.handleMapClick.bind(this);
     this.addMarker = this.addMarker.bind(this);
     this.onMarkerClick = this.onMarkerClick.bind(this);
+    this.deleteMarker = this.deleteMarker.bind(this);
   }
 
   componentDidMount() {
@@ -48,13 +56,13 @@ class MainContainer extends Component {
   //   });
   // }
 
+  toggleNav() {
+    this.setState({ isSidebarDisplayed: !this.state.isSidebarDisplayed });
+  }
+
   handleMapClick(t, map, coord) {
     this.setState({ showingInfoWindow: true });
     this.setState({ infoWindowPosition: coord.latLng });
-  }
-
-  toggleNav() {
-    this.setState({ isSidebarDisplayed: !this.state.isSidebarDisplayed });
   }
 
   addMarker(e) {
@@ -66,8 +74,24 @@ class MainContainer extends Component {
     this.setState({ showingInfoWindow: false });
   }
 
-  onMarkerClick(props, marker, e) {
+  deleteMarker(e) {
+    const markerCoords = this.state.infoMarkerPosition;
+    const markerToDelete = this.state.markers.filter(marker => { return marker.position === markerCoords });
+    const markerType = markerToDelete[0].type;
+    const index = this.state.markers.indexOf(markerToDelete[0])
 
+    this.state.markers.splice(index, 1);
+    if(markerType === "starter"){
+      const newStarter = this.state.markers.shift();
+      this.state.markers.unshift({type: "starter", position: newStarter.position});
+    }
+
+    this.setState({showingInfoMarker: false});
+  }
+
+  onMarkerClick(props, marker, e) {
+    this.setState({ showingInfoMarker: true });
+    this.setState({ infoMarkerPosition: marker.internalPosition });
   }
 
   render() {
@@ -88,6 +112,7 @@ class MainContainer extends Component {
           <EventInfoWindow
             visible={this.state.showingInfoWindow}
             position={this.state.infoWindowPosition}
+            onClose={() => { this.setState({ showingInfoWindow: false }) }}
           >
             <div id="infoWindowContainer">
               <button value="default" className="infoWindowButton" onClick={this.addMarker}>Añadir nuevo punto</button>
@@ -106,6 +131,16 @@ class MainContainer extends Component {
               }}
             />
           })}
+
+          <EventInfoWindow
+            visible={this.state.showingInfoMarker}
+            position={this.state.infoMarkerPosition}
+            onClose={() => { this.setState({ showingInfoMarker: false }) }}
+          >
+            <div id="infoWindowContainer">
+              <button className="infoWindowButton" onClick={this.deleteMarker}>Eliminar punto</button>
+            </div>
+          </EventInfoWindow>
         </Map>
 
         {this.state.isSidebarDisplayed ? <Sidebar sidebarClass="sidebar" /> : <Sidebar sidebarClass="sidebarClosed" />}
