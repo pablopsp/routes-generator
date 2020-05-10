@@ -69,8 +69,20 @@ class MainContainer extends Component {
     const coords = this.state.infoWindowPosition;
     const type = e.target.value;
 
-    const newMarker = { type: type, position: coords }
-    type === "starter" ? this.state.markers.unshift(newMarker) : this.state.markers.push(newMarker);
+    const newMarker = { type: type, position: coords };
+    const existsStarter = this.state.markers.filter(marker => { return marker.type === "starter" });
+
+    if (type === "starter" && existsStarter[0] !== undefined) {
+      if(window.confirm("Ya existe un punto de incio, ¿desea cambiarlo y borrar el actual?")){
+        this.state.markers.shift();
+        this.state.markers.unshift(newMarker);
+      }
+    }
+    else if (type === "starter" && existsStarter === undefined) 
+      this.state.markers.unshift(newMarker);
+    else
+      this.state.markers.push(newMarker);
+
     this.setState({ showingInfoWindow: false });
   }
 
@@ -81,12 +93,12 @@ class MainContainer extends Component {
     const index = this.state.markers.indexOf(markerToDelete[0])
 
     this.state.markers.splice(index, 1);
-    if(markerType === "starter"){
+    if (markerType === "starter") {
       const newStarter = this.state.markers.shift();
-      this.state.markers.unshift({type: "starter", position: newStarter.position});
+      this.state.markers.unshift({ type: "starter", position: newStarter.position });
     }
 
-    this.setState({showingInfoMarker: false});
+    this.setState({ showingInfoMarker: false });
   }
 
   onMarkerClick(props, marker, e) {
