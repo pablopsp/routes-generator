@@ -168,7 +168,7 @@ class MainContainer extends Component {
 }
 
 export default GoogleApiWrapper({
-  apiKey: "",
+  apiKey: process.env.GOOGLE_MAPS_API,
 })(MainContainer);
 
 /*
