@@ -73,12 +73,12 @@ class MainContainer extends Component {
     const existsStarter = this.state.markers.filter(marker => { return marker.type === "starter" });
 
     if (type === "starter" && existsStarter[0] !== undefined) {
-      if(window.confirm("Ya existe un punto de incio, ¿desea cambiarlo y borrar el actual?")){
+      if (window.confirm("Ya existe un punto de incio, ¿desea cambiarlo y borrar el actual?")) {
         this.state.markers.shift();
         this.state.markers.unshift(newMarker);
       }
     }
-    else if (type === "starter" && existsStarter === undefined) 
+    else if (type === "starter" && existsStarter === undefined)
       this.state.markers.unshift(newMarker);
     else
       this.state.markers.push(newMarker);
@@ -168,7 +168,7 @@ class MainContainer extends Component {
 }
 
 export default GoogleApiWrapper({
-  apiKey: process.env.NODE_ENV === "development" ? "" : process.env.REACT_APP_MAPS_KEY,
+  apiKey: process.env.REACT_APP_MAPS_KEY,
 })(MainContainer);
 
 /*
