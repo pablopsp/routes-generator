@@ -7,6 +7,7 @@ import Sidebar from "../sidebar/sidebar";
 import starterMarker from '../../assets/iconfinder_Map-Marker-Ball-Azure_73012.png'
 import defaultMarker from '../../assets/iconfinder_Map-Marker-Ball-Pink_73017.png'
 import './main_container.css';
+import mapOptions from '../../MapOptions'
 
 class MainContainer extends Component {
   constructor(props) {
@@ -50,11 +51,11 @@ class MainContainer extends Component {
     }
   }
 
-  // _mapLoaded(mapProps, map) {
-  //   map.setOptions({
-  //     styles: mapOpt
-  //   });
-  // }
+  _mapLoaded(mapProps, map) {
+    map.setOptions({
+      styles: mapOptions
+    });
+  }
 
   toggleNav() {
     this.setState({ isSidebarDisplayed: !this.state.isSidebarDisplayed });
@@ -113,11 +114,11 @@ class MainContainer extends Component {
         <Map
           google={this.props.google}
           zoom={this.state.currentZoom}
+          mapTypeControl={false}
           initialCenter={this.state.initialPosition}
           center={this.state.currentPosition !== {} ? this.state.currentPosition : ''}
           className={!this.state.isSidebarDisplayed ? "mapStyle" : "mapStyleWithSideBar"}
-          //para que funcione el onready de custom style hace falta key
-          //onReady={(mapProps, map) => this._mapLoaded(mapProps, map)}
+          onReady={(mapProps, map) => this._mapLoaded(mapProps, map)}
           onClick={this.handleMapClick}
           onContextMenu={this.handleMapClick}>
 
