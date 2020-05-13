@@ -34,6 +34,7 @@ class MainContainer extends Component {
     this.addMarker = this.addMarker.bind(this);
     this.onMarkerClick = this.onMarkerClick.bind(this);
     this.deleteMarker = this.deleteMarker.bind(this);
+    this.setMapCenter = this.setMapCenter.bind(this);
   }
 
   componentDidMount() {
@@ -128,6 +129,10 @@ class MainContainer extends Component {
     this.setState({ infoMarkerPosition: marker.internalPosition });
   }
 
+  setMapCenter(position){
+    this.setState({currentPosition: position});
+  }
+
   render() {
     const _markers = this.state.markers;
 
@@ -179,7 +184,7 @@ class MainContainer extends Component {
         </Map>
 
         {this.state.isSidebarDisplayed
-          ? <Sidebar sidebarClass="sidebar" markers={this.state.markers} />
+          ? <Sidebar sidebarClass="sidebar" markers={this.state.markers} handler={this.setMapCenter}/>
           : <Sidebar sidebarClass="sidebarClosed" />}
         <button className={!this.state.isSidebarDisplayed ? "arrowBtn" : "arrowNavWithSideBar"} onClick={this.toggleNav}>
           <img
