@@ -26,7 +26,7 @@ class MainContainer extends Component {
       showingInfoMarker: false,
       infoMarkerPosition: null,
 
-      markers: []
+      markers: [],
     };
 
     this.toggleNav = this.toggleNav.bind(this);
@@ -66,25 +66,44 @@ class MainContainer extends Component {
     this.setState({ infoWindowPosition: coord.latLng });
   }
 
+
+  reverseGeocoding(coords, func) {
+    const geocoder = new this.props.google.maps.Geocoder();
+
+    geocoder.geocode({ 'location': coords }, (results, status) => {
+      if (status === "OK") {
+        if (results[0])
+          func(results[0].formatted_address);
+        else
+          console.log("No results found at reverse geocoding");
+      }
+      else
+        console.error("Geocoder failed due to: " + status)
+    });
+  }
+
+
   addMarker(e) {
     const coords = this.state.infoWindowPosition;
     const type = e.target.value;
 
-    const newMarker = { type: type, position: coords };
-    const existsStarter = this.state.markers.filter(marker => { return marker.type === "starter" });
+    this.reverseGeocoding(coords, (formatted_address) => {
+      const newMarker = { type: type, position: coords, formatted_address: formatted_address };
+      const existsStarter = this.state.markers.filter(marker => { return marker.type === "starter" });
 
-    if (type === "starter" && existsStarter[0] !== undefined) {
-      if (window.confirm("Ya existe un punto de incio, ¿desea cambiarlo y borrar el actual?")) {
-        this.state.markers.shift();
-        this.state.markers.unshift(newMarker);
+      if (type === "starter" && existsStarter[0] !== undefined) {
+        if (window.confirm("Ya existe un punto de incio, ¿desea cambiarlo y borrar el actual?")) {
+          this.state.markers.shift();
+          this.state.markers.unshift(newMarker);
+        }
       }
-    }
-    else if (type === "starter" && existsStarter === undefined)
-      this.state.markers.unshift(newMarker);
-    else
-      this.state.markers.push(newMarker);
+      else if (type === "starter" && existsStarter === undefined)
+        this.state.markers.unshift(newMarker);
+      else
+        this.state.markers.push(newMarker);
 
-    this.setState({ showingInfoWindow: false });
+      this.setState({ showingInfoWindow: false });
+    });
   }
 
   deleteMarker(e) {
@@ -94,10 +113,12 @@ class MainContainer extends Component {
     const index = this.state.markers.indexOf(markerToDelete[0])
 
     this.state.markers.splice(index, 1);
-    if (markerType === "starter") {
+
+    if (markerType === "starter" && this.state.markers.length !== 0) {
       const newStarter = this.state.markers.shift();
-      this.state.markers.unshift({ type: "starter", position: newStarter.position });
+      this.state.markers.unshift({ type: "starter", position: newStarter.position, formatted_address: newStarter.formatted_address });
     }
+
 
     this.setState({ showingInfoMarker: false });
   }
@@ -109,6 +130,7 @@ class MainContainer extends Component {
 
   render() {
     const _markers = this.state.markers;
+
     return (
       <div style={{ display: "flex", width: "100%", height: "100%" }}>
         <Map
@@ -156,7 +178,9 @@ class MainContainer extends Component {
           </EventInfoWindow>
         </Map>
 
-        {this.state.isSidebarDisplayed ? <Sidebar sidebarClass="sidebar" /> : <Sidebar sidebarClass="sidebarClosed" />}
+        {this.state.isSidebarDisplayed
+          ? <Sidebar sidebarClass="sidebar" markers={this.state.markers} />
+          : <Sidebar sidebarClass="sidebarClosed" />}
         <button className={!this.state.isSidebarDisplayed ? "arrowBtn" : "arrowNavWithSideBar"} onClick={this.toggleNav}>
           <img
             alt="right-chevron"
