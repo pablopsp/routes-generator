@@ -18,7 +18,7 @@ class MainContainer extends Component {
       currentPosition: {},
       currentZoom: 6,
 
-      isSidebarDisplayed: false,
+      isSidebarDisplayed: true,
 
       showingInfoWindow: false,
       infoWindowPosition: null,
@@ -198,7 +198,7 @@ class MainContainer extends Component {
 }
 
 export default GoogleApiWrapper({
-  apiKey: process.env.REACT_APP_MAPS_KEY,
+  apiKey: "", //process.env.REACT_APP_MAPS_KEY,
 })(MainContainer);
 
 /*

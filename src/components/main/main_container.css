@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,700,700i');
+
+body,
+html {
+    font-family: "Raleway", sans-serif, arial;
+}
+
 .arrowBtn {
     position: absolute;
     margin-top: 25px;
