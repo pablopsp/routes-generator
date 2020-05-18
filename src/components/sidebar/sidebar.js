@@ -6,32 +6,38 @@ class Sidebar extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-
-    };
+    this.autocompleteInput = React.createRef();
+    this.autocomplete = null;
+    this.handleNewMarker = this.handleNewMarker.bind(this);
   }
 
-  componentDidMount(){
-    
+  componentDidMount() {
+    this.autocomplete = new this.props.googleprops.maps.places.Autocomplete(this.autocompleteInput.current,
+      { "types": ["geocode"] });
   }
 
+  handleNewMarker(e) {
+    const place = this.autocomplete.getPlace();
+    this.props.handleNewMarker(place);
+  }
 
   render() {
     const markers = this.props.markers;
-    // const asd =["No hay ningún dirección cargada.","No hay ningún dirección cargada.","No hay ningún dirección cargada.","No hay ningún dirección cargada.","No hay ningún dirección cargada.","No hay ningún dirección cargada.","No hay ningún dirección cargada.","No hay ningún dirección cargada.","No hay ningún dirección cargada.","No hay ningún dirección cargada."]
     return (
       <nav className={this.props.sidebarClass}>
         <div className="info-container">
           <div className="places-container">
-            <p>Places</p>
+            <h3>Agregue direcciones</h3>
+            <input ref={this.autocompleteInput} id="autocomplete" placeholder="Ingrese su dirección" type="text"></input>
+            <button id="searchBtn" type="submit" onClick={this.handleNewMarker}><i className="fa fa-search"></i></button>
           </div>
           <hr />
           <div className="markers-container">
-            <h3 style={{color:"#06C"}}>Lista de marcadores</h3>
+            <h3>Lista de marcadores</h3>
             <ul>
               {markers !== undefined && markers.length !== 0
                 ? markers.map((marker, i) => {
-                  return <li onClick={(e) => { this.props.handler(marker.position) }} key={i}>{marker.formatted_address}</li>
+                  return <li onClick={(e) => { this.props.handlerSetMapCenter(marker.position) }} key={i}>{marker.formatted_address}</li>
                 })
                 : <li key="noDir">No hay ningún dirección cargada.</li>
               }

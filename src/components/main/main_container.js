@@ -27,6 +27,7 @@ class MainContainer extends Component {
       infoMarkerPosition: null,
 
       markers: [],
+      markerPlaceName: ""
     };
 
     this.toggleNav = this.toggleNav.bind(this);
@@ -35,6 +36,7 @@ class MainContainer extends Component {
     this.onMarkerClick = this.onMarkerClick.bind(this);
     this.deleteMarker = this.deleteMarker.bind(this);
     this.setMapCenter = this.setMapCenter.bind(this);
+    this.onNewMarker = this.onNewMarker.bind(this);
   }
 
   componentDidMount() {
@@ -119,18 +121,28 @@ class MainContainer extends Component {
       const newStarter = this.state.markers.shift();
       this.state.markers.unshift({ type: "starter", position: newStarter.position, formatted_address: newStarter.formatted_address });
     }
-
-
     this.setState({ showingInfoMarker: false });
   }
 
   onMarkerClick(props, marker, e) {
     this.setState({ showingInfoMarker: true });
+    this.setState({ markerPlaceName: marker.name });
     this.setState({ infoMarkerPosition: marker.internalPosition });
   }
 
-  setMapCenter(position){
-    this.setState({currentPosition: position});
+  setMapCenter(position) {
+    this.setState({ currentPosition: position });
+  }
+
+  onNewMarker(place) {
+    const type = this.state.markers.length === 0 ? "starter" : "default";
+    const newMarker = { type: type, position: place.geometry.location, formatted_address: place.formatted_address };
+    this.state.markers.push(newMarker);
+
+    this.setState({ showingInfoMarker: true });
+    this.setState({ markerPlaceName: place.formatted_address });
+    this.setState({ infoMarkerPosition: place.geometry.location });
+
   }
 
   render() {
@@ -163,6 +175,7 @@ class MainContainer extends Component {
           {_markers.map((marker, i) => {
             return <Marker
               key={marker.type + i}
+              name={marker.formatted_address}
               onClick={this.onMarkerClick}
               position={marker.position}
               icon={{
@@ -178,13 +191,20 @@ class MainContainer extends Component {
             onClose={() => { this.setState({ showingInfoMarker: false }) }}
           >
             <div id="infoWindowContainer">
+              <p>{this.state.markerPlaceName}</p>
               <button className="infoWindowButton" onClick={this.deleteMarker}>Eliminar punto</button>
             </div>
           </EventInfoWindow>
         </Map>
 
         {this.state.isSidebarDisplayed
-          ? <Sidebar sidebarClass="sidebar" markers={this.state.markers} handler={this.setMapCenter}/>
+          ? <Sidebar
+            googleprops={this.props.google}
+            sidebarClass="sidebar"
+            handleNewMarker={this.onNewMarker}
+            handlerSetMapCenter={this.setMapCenter}
+            markers={this.state.markers}
+          />
           : <Sidebar sidebarClass="sidebarClosed" />}
         <button className={!this.state.isSidebarDisplayed ? "arrowBtn" : "arrowNavWithSideBar"} onClick={this.toggleNav}>
           <img
@@ -198,7 +218,7 @@ class MainContainer extends Component {
 }
 
 export default GoogleApiWrapper({
-  apiKey: "", //process.env.REACT_APP_MAPS_KEY,
+  apiKey: "",//process.env.REACT_APP_MAPS_KEY,
 })(MainContainer);
 
 /*

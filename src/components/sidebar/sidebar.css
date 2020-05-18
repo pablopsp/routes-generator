@@ -1,3 +1,7 @@
+h3 {
+    color: #06c;
+}
+
 .sidebar {
     position: absolute;
     height: 100%;
@@ -32,7 +36,6 @@
 
     100% {
         width: 0px;
-        display: none;
     }
 }
 
@@ -54,6 +57,29 @@ hr {
     height: 20%;
     text-align: center;
     align-items: center;
+}
+
+#autocomplete {
+    width: 60%;
+    padding: 6px;
+    font-size: 17px;
+    background-color: #f1f1f1;
+    border: 1px solid grey;
+}
+
+#searchBtn {
+    width: 15%;
+    padding: 6px;
+    font-size: 17px;
+    color: white;
+    background-color: #2196F3;
+    border: 1px solid grey;
+    border-left: none;
+    cursor: pointer;
+}
+
+#searchBtn:hover {
+    background-color: #0b7dda;
 }
 
 .markers-container {
