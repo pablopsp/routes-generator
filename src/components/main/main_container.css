@@ -8,6 +8,7 @@ html {
 .arrowBtn {
     position: absolute;
     margin-top: 25px;
+    cursor: pointer;
     animation: arrowAnim 1s ease;
 }
 
@@ -25,6 +26,7 @@ html {
     position: absolute;
     margin-top: 25px;
     left: 25%;
+    cursor: pointer;
     animation: arrowSideAnim 1s ease;
 }
 
@@ -43,33 +45,15 @@ html {
     overflow: hidden;
     width: 100% !important;
     right: 0;
-    animation: mapAnim 1s ease;
+    transition: width 1s;
 }
 
-@keyframes mapAnim {
-    0% {
-        width: 75%;
-    }
-
-    100% {
-        width: 100%;
-    }
-}
 
 .mapStyleWithSideBar {
     position: relative;
     overflow: hidden;
     width: 75% !important;
     right: 0;
-    animation: mapSideAnim 1s ease;
+    transition: width 1s;
 }
 
-@keyframes mapSideAnim {
-    0% {
-        width: 100%;
-    }
-
-    100% {
-        width: 75%;
-    }
-}

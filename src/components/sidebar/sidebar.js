@@ -12,8 +12,9 @@ class Sidebar extends Component {
   }
 
   componentDidMount() {
-    this.autocomplete = new this.props.googleprops.maps.places.Autocomplete(this.autocompleteInput.current,
-      { "types": ["geocode"] });
+    this.autocomplete = this.props.googleprops !== undefined
+      ? new this.props.googleprops.maps.places.Autocomplete(this.autocompleteInput.current, { "types": ["geocode"] })
+      : null
   }
 
   handleNewMarker(e) {

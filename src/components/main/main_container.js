@@ -18,7 +18,7 @@ class MainContainer extends Component {
       currentPosition: {},
       currentZoom: 6,
 
-      isSidebarDisplayed: true,
+      isSidebarDisplayed: false,
 
       showingInfoWindow: false,
       infoWindowPosition: null,
