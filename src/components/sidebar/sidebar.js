@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 import './sidebar.css';
 
@@ -9,12 +10,11 @@ class Sidebar extends Component {
     this.autocompleteInput = React.createRef();
     this.autocomplete = null;
     this.handleNewMarker = this.handleNewMarker.bind(this);
+    this.generateRoute = this.generateRoute.bind(this);
   }
 
   componentDidMount() {
-    this.autocomplete = this.props.googleprops !== undefined
-      ? new this.props.googleprops.maps.places.Autocomplete(this.autocompleteInput.current, { "types": ["geocode"] })
-      : null
+    this.autocomplete = new this.props.googleprops.maps.places.Autocomplete(this.autocompleteInput.current, { "types": ["geocode"] });
   }
 
   handleNewMarker(e) {
@@ -22,8 +22,55 @@ class Sidebar extends Component {
     this.props.handleNewMarker(place);
   }
 
+  generateRoute() {
+    var service = new this.props.googleprops.maps.DistanceMatrixService();
+    const markersPos = this.props.markers.map(x => x.position)
+
+    service.getDistanceMatrix(
+      {
+        origins: markersPos,
+        destinations: markersPos,
+        travelMode: 'DRIVING'
+      }, responseDistanceMatrix);
+
+    function responseDistanceMatrix(response, status) {
+      if (status === "OK") {
+        var matrix = response.rows.map(row => {
+          return row.elements.map(element => {
+            return element.distance.text;
+          });
+        });
+        matrix.unshift(response.originAddresses)
+        console.log(matrix)
+        callCloudFunction();
+        function callCloudFunction() {
+          axios({
+            method: 'POST',
+            url: process.env.REACT_APP_GPC_FUNCTION_URL,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            data: JSON.stringify({ "matrix": JSON.stringify(matrix) })
+          }).then((response) => {
+            if (response && response.status === 200) {
+              const data = response.data;
+              console.log(data);
+            }
+          });
+        }
+      }
+    }
+  }
+
+
   render() {
-    const markers = this.props.markers;
+    var markersArr = this.props.markers;
+    if (markersArr.length >= 2) {
+      const marker = markersArr.filter(marker => { return marker.type === "starter" });
+      markersArr.splice(0, 0, markersArr.splice(markersArr.indexOf(marker[0]), 1)[0]);
+    }
+
     return (
       <nav className={this.props.sidebarClass}>
         <div className="info-container">
@@ -36,8 +83,8 @@ class Sidebar extends Component {
           <div className="markers-container">
             <h3>Lista de marcadores</h3>
             <ul>
-              {markers !== undefined && markers.length !== 0
-                ? markers.map((marker, i) => {
+              {markersArr !== undefined && markersArr.length !== 0
+                ? markersArr.map((marker, i) => {
                   return <li onClick={(e) => { this.props.handlerSetMapCenter(marker.position) }} key={i}>{marker.formatted_address}</li>
                 })
                 : <li key="noDir">No hay ningún dirección cargada.</li>
