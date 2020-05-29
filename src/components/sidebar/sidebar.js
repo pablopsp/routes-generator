@@ -40,9 +40,20 @@ class Sidebar extends Component {
             return element.distance.text;
           });
         });
+        
+        matrix = prepareDataToSend(matrix);
         matrix.unshift(response.originAddresses)
-        console.log(matrix)
         callCloudFunction();
+
+        function prepareDataToSend(matrix){
+          matrix = matrix.map(row => row.map(distance => distance.replace(',', "")));
+          matrix = matrix.map(row => row.map(distance => distance.replace('km', "")));
+          matrix = matrix.map(row => row.map(distance => distance.replace(' ', "")));
+          matrix = matrix.map(row => row.flatMap(distance => distance === "1 m" ? "0" : distance));
+
+          return matrix;
+        }
+
         function callCloudFunction() {
           axios({
             method: 'POST',
@@ -53,12 +64,15 @@ class Sidebar extends Component {
             },
             data: JSON.stringify({ "matrix": JSON.stringify(matrix) })
           }).then((response) => {
+            console.log(response)
             if (response && response.status === 200) {
               const data = response.data;
               console.log(data);
+              //representar la ruta devuelta
             }
           });
         }
+
       }
     }
   }
