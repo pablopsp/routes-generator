@@ -80,7 +80,7 @@ class Sidebar extends Component {
 
   render() {
     var markersArr = this.props.markers;
-    if (markersArr.length >= 2) {
+    if (markersArr !== undefined && markersArr.length >= 2) {
       const marker = markersArr.filter(marker => { return marker.type === "starter" });
       markersArr.splice(0, 0, markersArr.splice(markersArr.indexOf(marker[0]), 1)[0]);
     }
