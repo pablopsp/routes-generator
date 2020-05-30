@@ -12,7 +12,6 @@ import mapOptions from '../../MapOptions'
 class MainContainer extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       initialPosition: { lat: 40.416775, lng: -3.70379 },
       currentPosition: {},
@@ -29,6 +28,8 @@ class MainContainer extends Component {
       markers: [],
       markerPlaceName: ""
     };
+
+    this.mapRef = React.createRef();
 
     this.toggleNav = this.toggleNav.bind(this);
     this.handleMapClick = this.handleMapClick.bind(this);
@@ -109,11 +110,9 @@ class MainContainer extends Component {
     });
   }
 
-  deleteMarker(e) {
-    const markerCoords = this.state.infoMarkerPosition;
-    const markerToDelete = this.state.markers.filter(marker => { return marker.position === markerCoords });
-    const markerType = markerToDelete[0].type;
-    const index = this.state.markers.indexOf(markerToDelete[0])
+  deleteMarker(index) {
+    const markerToDelete = this.state.markers[index];
+    const markerType = markerToDelete.type;
 
     this.state.markers.splice(index, 1);
 
@@ -146,12 +145,14 @@ class MainContainer extends Component {
   }
 
   render() {
-    const _markers = this.state.markers;
+    const _markers = this.state.markers;  
+    console.log(this.mapRef)
 
     return (
       <div style={{ display: "flex", width: "100%", height: "100%" }}>
         <Map
           google={this.props.google}
+          ref={this.mapRef}
           zoom={this.state.currentZoom}
           mapTypeControl={false}
           initialCenter={this.state.initialPosition}
@@ -192,7 +193,6 @@ class MainContainer extends Component {
           >
             <div id="infoWindowContainer">
               <p>{this.state.markerPlaceName}</p>
-              <button className="infoWindowButton" onClick={this.deleteMarker}>Eliminar punto</button>
             </div>
           </EventInfoWindow>
         </Map>
@@ -200,10 +200,12 @@ class MainContainer extends Component {
         {this.state.isSidebarDisplayed
           ? <Sidebar
             googleprops={this.props.google}
+            mapRef={this.mapRef}
             sidebarClass="sidebar"
             handleNewMarker={this.onNewMarker}
             handlerSetMapCenter={this.setMapCenter}
             markers={this.state.markers}
+            handleDeleteMarker={this.deleteMarker}
           />
           : <Sidebar sidebarClass="sidebarClosed" />}
         <button className={!this.state.isSidebarDisplayed ? "arrowBtn" : "arrowNavWithSideBar"} onClick={this.toggleNav}>
@@ -218,28 +220,5 @@ class MainContainer extends Component {
 }
 
 export default GoogleApiWrapper({
-  apiKey: "", //process.env.REACT_APP_MAPS_KEY,
+  apiKey: process.env.REACT_APP_MAPS_KEY,
 })(MainContainer);
-
-/*
-  map infowindow on click
-  que salgas dos opciones, agregar nuevo punto
-  o agregar nuevo inicio
-
-  al darle a agregar nuevo punto, this.state.markers.push()
-  al darle a agregar nuevo inicio, this.state.markers.push() al inicio del array
-
-  y para mostrar los markers en el map, this.state.markers.map en el return render
-*/
-
-//esto sirve por ejemplo, poner la calle y que te devuelva la posicion, hace falta key
-// var geocoder = new window.google.maps.Geocoder();
-// geocoder.geocode({
-//       'address': "Madrid"
-//     }, function (results, status) {
-//       if (status === 'OK') {
-//         map.setCenter(results[0].geometry.location);
-//         map.setZoom(8)
-//       } else {
-//         console.error('Geocode was not successful for the following reason: ' + status);
-//       }

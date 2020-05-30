@@ -7,13 +7,31 @@ class Sidebar extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      showRoute: false,
+
+      routeTotalDistance: 0,
+      routeIndications: []
+    };
     this.autocompleteInput = React.createRef();
+
     this.autocomplete = null;
+    this.matrixService = null;
+    this.directionsService = null;
+    this.directionsRenderer = null;
+
     this.handleNewMarker = this.handleNewMarker.bind(this);
     this.generateRoute = this.generateRoute.bind(this);
   }
 
   componentDidMount() {
+    this.matrixService = new this.props.googleprops.maps.DistanceMatrixService();
+    this.directionsService = new this.props.googleprops.maps.DirectionsService();
+    this.directionsRenderer = new this.props.googleprops.maps.DirectionsRenderer({
+      map: this.props.mapRef['current']['map'],
+      suppressMarkers: true,
+      suppressInfoWindows: true
+    });
     this.autocomplete = new this.props.googleprops.maps.places.Autocomplete(this.autocompleteInput.current, { "types": ["geocode"] });
   }
 
@@ -23,58 +41,88 @@ class Sidebar extends Component {
   }
 
   generateRoute() {
-    var service = new this.props.googleprops.maps.DistanceMatrixService();
-    const markersPos = this.props.markers.map(x => x.position)
+    if (this.props.markers.length >= 3) {
+      this.setState({ routeTotalDistance: 0, routeIndications: [] });
 
-    service.getDistanceMatrix(
-      {
-        origins: markersPos,
-        destinations: markersPos,
-        travelMode: 'DRIVING'
-      }, responseDistanceMatrix);
+      const markersPos = this.props.markers.map(x => x.position)
+      this.matrixService.getDistanceMatrix(
+        {
+          origins: markersPos,
+          destinations: markersPos,
+          travelMode: 'DRIVING'
+        }, responseDistanceMatrix.bind(this));
 
-    function responseDistanceMatrix(response, status) {
-      if (status === "OK") {
-        var matrix = response.rows.map(row => {
-          return row.elements.map(element => {
-            return element.distance.text;
+      function responseDistanceMatrix(response, status) {
+        if (status === "OK") {
+          var matrix = response.rows.map(row => {
+            return row.elements.map(element => {
+              return element.distance.text;
+            });
           });
-        });
-        
-        matrix = prepareDataToSend(matrix);
-        matrix.unshift(response.originAddresses)
-        callCloudFunction();
 
-        function prepareDataToSend(matrix){
-          matrix = matrix.map(row => row.map(distance => distance.replace(',', "")));
-          matrix = matrix.map(row => row.map(distance => distance.replace('km', "")));
-          matrix = matrix.map(row => row.map(distance => distance.replace(' ', "")));
-          matrix = matrix.map(row => row.flatMap(distance => distance === "1m" ? "0" : distance));
+          matrix = prepareDataToSend(matrix);
+          matrix.unshift(response.originAddresses)
+          callCloudFunction.bind(this)(response.originAddresses);
 
-          return matrix;
+          function prepareDataToSend(matrix) {
+            matrix = matrix.map(row => row.map(distance => distance.replace(',', "").replace('km', "").replace('.', "").replace(' ', "")));
+            matrix = matrix.map(row => row.flatMap(distance => distance === "1m" ? "0" : distance));
+
+            return matrix;
+          }
+
+          function callCloudFunction(addressArr) {
+            axios({
+              method: 'POST',
+              url: process.env.REACT_APP_GPC_FUNCTION_URL,
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              data: JSON.stringify({ "matrix": JSON.stringify(matrix) })
+            }).then((response) => {
+              if (response && response.status === 200) {
+                const dataObj = response.data;
+                const dataArr = dataObj['camino'];
+                const distance = dataObj['distance'];
+
+                const routeArr = dataArr.map(n => addressArr[n]);
+                const origin = routeArr.shift()
+                const destination = routeArr.pop()
+
+                var waypts = routeArr.map(point => {
+                  return { location: point, stopover: true }
+                });
+
+                this.directionsService.route({
+                  origin: origin,
+                  destination: destination,
+                  waypoints: waypts,
+                  optimizeWaypoints: true,
+                  travelMode: 'DRIVING'
+                }, (response, stauts) => {
+                  if (status === 'OK') {
+                    this.directionsRenderer.setDirections(response);
+                    const route = response.routes[0];
+                    const routeCustomObject = route['legs'].map(leg => {
+                      return { from: leg['start_address'], to: leg['end_address'], steps: leg['steps'] };
+                    });
+                    this.state.routeIndications.push(routeCustomObject);
+                    this.setState({ routeTotalDistance: distance, showRoute: true });
+
+                    //TODO: llamar aqui al guardado en BD (?)
+                  }
+                  else
+                    console.error('Directions request failed due to ' + status);
+                });
+              }
+            });
+          }
         }
-
-        function callCloudFunction() {
-          axios({
-            method: 'POST',
-            url: process.env.REACT_APP_GPC_FUNCTION_URL,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            data: JSON.stringify({ "matrix": JSON.stringify(matrix) })
-          }).then((response) => {
-            console.log(response)
-            if (response && response.status === 200) {
-              const data = response.data;
-              console.log(data);
-              //representar la ruta devuelta
-            }
-          });
-        }
-
       }
     }
+    else
+      alert("Necesita al menos 3 puntos o más para generar una ruta.");
   }
 
 
@@ -95,15 +143,54 @@ class Sidebar extends Component {
           </div>
           <hr />
           <div className="markers-container">
-            <h3>Lista de marcadores</h3>
-            <ul>
-              {markersArr !== undefined && markersArr.length !== 0
-                ? markersArr.map((marker, i) => {
-                  return <li onClick={(e) => { this.props.handlerSetMapCenter(marker.position) }} key={i}>{marker.formatted_address}</li>
-                })
-                : <li key="noDir">No hay ningún dirección cargada.</li>
-              }
-            </ul>
+            <div className="switcher-markers-routes">
+              <button onClick={(e) => { this.setState({ showRoute: !this.state.showRoute }) }}>Markers</button>
+              <button onClick={(e) => { this.setState({ showRoute: !this.state.showRoute }) }}>Routes</button>
+            </div>
+            {this.state.showRoute ? <h3>Rutas e indicaciones</h3> : <h3>Lista de marcadores</h3>}
+            {this.state.showRoute
+              ?
+              <ul style={{ textAlign: "left", listStyleType: "circle" }} className="routeIndications">
+                {this.state.routeIndications.length !== 0 ?
+                  <div>
+                    <h4 style={{ color: "#07c" }}>Distancia total: {this.state.routeTotalDistance} km.</h4>
+                    <h4>Ruta</h4>
+                    {this.state.routeIndications[0].map((indication, i) => {
+                      return <div style={{ marginLeft: "8%" }} key={i * this.state.routeTotalDistance}>
+                        <span><b>From: </b>{indication['from']}</span>
+                        <br />
+                        <span><b>To: </b> {indication['to']}</span>
+                        <br /><br />
+                      </div>
+                    })}
+                    <h4>Indicaciones</h4>
+                    {this.state.routeIndications[0].map((indication, i) => {
+                      return <div key={i * (this.state.routeTotalDistance / 2)}>
+                        <span><b>Pasos de la ruta</b></span>
+                        <br />
+                        {indication['steps'].map(step => {
+                          return <li style={{ marginLeft: "8%" }} key={step['distance'].value * step['duration'].value}
+                            dangerouslySetInnerHTML={{ __html: step['instructions'] }}></li>;
+                        })}
+
+                        {i !== 0 || i !== this.state.routeIndications.length ? <hr style={{ marginLeft: "0" }} /> : null}
+                      </div>
+                    })}
+                  </div>
+                  : <h4 style={{ textAlign: "center" }}>No Hay rutas</h4>}
+              </ul>
+              :
+              <ul>
+                {markersArr !== undefined && markersArr.length !== 0
+                  ? markersArr.map((marker, i) => {
+                    return <li onClick={(e) => { this.props.handlerSetMapCenter(marker.position) }} key={i}>
+                      {marker.formatted_address}
+                      <i onClick={(e) => { this.props.handleDeleteMarker(i) }} className="fa fa-window-close"></i>
+                    </li>
+                  })
+                  : <li key="noDir">No hay ningún dirección cargada.</li>
+                }
+              </ul>}
           </div>
           <hr />
           <div className="generate-route-container">

@@ -2,6 +2,13 @@ h3 {
     color: #06c;
 }
 
+h4 {
+    color: #09c;
+    margin-left: 5%;
+    margin-bottom: 4%;
+    text-decoration: underline;
+}
+
 .sidebar {
     position: absolute;
     height: 100%;
@@ -85,6 +92,20 @@ hr {
     height: 50%;
     padding: 8px;
     overflow: auto;
+}
+
+.switcher-markers-routes {
+    text-align: center;
+}
+
+.switcher-markers-routes>button {
+    width: 25%;
+    padding: 6px;
+    font-size: 17px;
+    color: white;
+    background-color: #2196F3;
+    border: 0.5px solid rgb(14, 84, 141);
+    cursor: pointer;
 }
 
 .markers-container>ul {
