@@ -49,7 +49,7 @@ class Sidebar extends Component {
           matrix = matrix.map(row => row.map(distance => distance.replace(',', "")));
           matrix = matrix.map(row => row.map(distance => distance.replace('km', "")));
           matrix = matrix.map(row => row.map(distance => distance.replace(' ', "")));
-          matrix = matrix.map(row => row.flatMap(distance => distance === "1 m" ? "0" : distance));
+          matrix = matrix.map(row => row.flatMap(distance => distance === "1m" ? "0" : distance));
 
           return matrix;
         }
