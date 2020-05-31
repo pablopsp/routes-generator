@@ -28,7 +28,6 @@ class Sidebar extends Component {
     this.matrixService = new this.props.googleprops.maps.DistanceMatrixService();
     this.directionsService = new this.props.googleprops.maps.DirectionsService();
     this.directionsRenderer = new this.props.googleprops.maps.DirectionsRenderer({
-      map: this.props.mapRef['current']['map'],
       suppressMarkers: true,
       suppressInfoWindows: true
     });
@@ -36,6 +35,7 @@ class Sidebar extends Component {
   }
 
   handleNewMarker(e) {
+    this.directionsRenderer.setMap(null);
     const place = this.autocomplete.getPlace();
     this.props.handleNewMarker(place);
   }
@@ -102,6 +102,7 @@ class Sidebar extends Component {
                   travelMode: 'DRIVING'
                 }, (response, stauts) => {
                   if (status === 'OK') {
+                    this.directionsRenderer.setMap(this.props.mapRef['current']['map']);
                     this.directionsRenderer.setDirections(response);
                     const route = response.routes[0];
                     const routeCustomObject = route['legs'].map(leg => {
@@ -185,7 +186,7 @@ class Sidebar extends Component {
                   ? markersArr.map((marker, i) => {
                     return <li onClick={(e) => { this.props.handlerSetMapCenter(marker.position) }} key={i}>
                       {marker.formatted_address}
-                      <i onClick={(e) => { this.props.handleDeleteMarker(i) }} className="fa fa-window-close"></i>
+                      <i onClick={(e) => { this.directionsRenderer.setMap(null); this.props.handleDeleteMarker(i); }} className="fa fa-window-close"></i>
                     </li>
                   })
                   : <li key="noDir">No hay ningún dirección cargada.</li>
