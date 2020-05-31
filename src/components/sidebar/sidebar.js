@@ -59,13 +59,13 @@ class Sidebar extends Component {
               return element.distance.text;
             });
           });
-
+          
           matrix = prepareDataToSend(matrix);
           matrix.unshift(response.originAddresses)
           callCloudFunction.bind(this)(response.originAddresses);
 
           function prepareDataToSend(matrix) {
-            matrix = matrix.map(row => row.map(distance => distance.replace(',', "").replace('km', "").replace('.', "").replace(' ', "")));
+            matrix = matrix.map(row => row.map(distance => distance.replace(',', ".").replace('km', "").replace(' ', "")));
             matrix = matrix.map(row => row.flatMap(distance => distance === "1m" ? "0" : distance));
 
             return matrix;

@@ -145,8 +145,7 @@ class MainContainer extends Component {
   }
 
   render() {
-    const _markers = this.state.markers;  
-    console.log(this.mapRef)
+    const _markers = this.state.markers;
 
     return (
       <div style={{ display: "flex", width: "100%", height: "100%" }}>
