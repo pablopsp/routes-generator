@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 
 import './sidebar.css';
+import firebase from './../../services/fire-service'
 
 class Sidebar extends Component {
   constructor(props) {
@@ -112,6 +113,14 @@ class Sidebar extends Component {
                     this.setState({ routeTotalDistance: distance, showRoute: true });
 
                     //TODO: llamar aqui al guardado en BD (?)
+                    firebase.firestore().collection("route-data").add({
+                      "origin": response['request']['origin']['query'],
+                      "waypoints": response['request']['waypoints'].map(waypoint => waypoint.location['query']),
+                      "legs": response.routes[0]['legs'].map(leg => {
+                        return {from: leg['start_address'], to: leg['end_address'], distance: leg['distance'], duration: leg['duration']};
+                      })
+                    });
+                    
                   }
                   else
                     console.error('Directions request failed due to ' + status);
