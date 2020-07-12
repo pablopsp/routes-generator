@@ -3,6 +3,8 @@ import axios from "axios";
 
 import './sidebar.css';
 import firebase from './../../services/fire-service'
+import nearestOnes from './../../algorithm/nearest-ones';
+import clearMatrix from './../../utils';
 
 class Sidebar extends Component {
   constructor(props) {
@@ -24,9 +26,7 @@ class Sidebar extends Component {
 
     this.handleNewMarker = this.handleNewMarker.bind(this);
     this.generateRoute = this.generateRoute.bind(this);
-    this.prepareDataToSend = this.prepareDataToSend.bind(this);
     this.callCloudFunction = this.callCloudFunction.bind(this);
-    this.getDistanceNearestOnes = this.getDistanceNearestOnes.bind(this);
   }
 
   componentDidMount() {
@@ -65,8 +65,8 @@ class Sidebar extends Component {
             });
           });
 
-          matrix = this.prepareDataToSend(matrix);
-          const distanceNearestOnes = this.getDistanceNearestOnes(matrix);
+          matrix = clearMatrix(matrix);
+          const distanceNearestOnes = nearestOnes(matrix);
           matrix.unshift(response.originAddresses);
           this.callCloudFunction(response.originAddresses, matrix, distanceNearestOnes);
         }
@@ -76,12 +76,6 @@ class Sidebar extends Component {
       alert("Necesita al menos 3 puntos o más para generar una ruta.");
   }
 
-  prepareDataToSend(matrix) {
-    matrix = matrix.map(row => row.map(distance => distance.replace(',', ".").replace('km', "").replace(' ', "")));
-    matrix = matrix.map(row => row.flatMap(distance => distance === "1m" ? "0" : distance));
-
-    return matrix;
-  }
 
   callCloudFunction(addressArr, matrix, distanceNearestOnes) {
     axios({
@@ -141,27 +135,6 @@ class Sidebar extends Component {
         });
       }
     });
-  }
-
-  getDistanceNearestOnes(matrix) {
-    var matrixCopy = JSON.parse(JSON.stringify(matrix));
-    matrixCopy.map(x => x[0] = "0");
-    matrixCopy = matrixCopy.map(x => x.map(y => Number(y)));
-
-    var result = [];
-    var index = 0;
-    const updateUsedColumn = (row) => { row[index] = 0 }
-
-    for (let i = 0; i < matrixCopy.length - 1; i++) {
-      const min = Math.min(...matrixCopy[index].filter(Number));
-      result.push(min);
-      index = matrixCopy[index].indexOf(min);
-      matrixCopy.map(x => updateUsedColumn(x));
-    }
-
-    result.push(Number(matrix[index][0]));
-
-    return result;
   }
 
 
