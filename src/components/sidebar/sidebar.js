@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { trackPromise } from 'react-promise-tracker';
 
 import './sidebar.css';
 import firebase from './../../services/fire-service'
@@ -78,7 +79,7 @@ class Sidebar extends Component {
 
 
   callCloudFunction(addressArr, matrix, distanceNearestOnes) {
-    axios({
+    trackPromise(axios({
       method: 'POST',
       url: process.env.REACT_APP_GPC_FUNCTION_URL,
       headers: {
@@ -134,7 +135,7 @@ class Sidebar extends Component {
             console.error('Directions request failed due to ' + status);
         });
       }
-    });
+    }));
   }
 
 

@@ -3,11 +3,12 @@ import { Map, GoogleApiWrapper, Marker } from "google-maps-react";
 
 import EventInfoWindow from "../infowindowhandler/info_window_handler"
 import Sidebar from "../sidebar/sidebar";
+import LoadingIndicator from "./../loading"
 
 import starterMarker from '../../assets/iconfinder_Map-Marker-Ball-Azure_73012.png'
 import defaultMarker from '../../assets/iconfinder_Map-Marker-Ball-Pink_73017.png'
 import './main_container.css';
-import mapOptions from '../../MapOptions'
+import mapOptions from '../../MapOptions';
 
 class MainContainer extends Component {
   constructor(props) {
@@ -213,6 +214,7 @@ class MainContainer extends Component {
             src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj48cGF0aCBkPSJNMTguNjI5IDE1Ljk5N2wtNy4wODMtNy4wODFMMTMuNDYyIDdsOC45OTcgOC45OTdMMTMuNDU3IDI1bC0xLjkxNi0xLjkxNnoiLz48L3N2Zz4="
           />
         </button>
+        <LoadingIndicator />
       </div>
     );
   }
