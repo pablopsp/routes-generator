@@ -166,8 +166,8 @@ class Sidebar extends Component {
               <ul style={{ textAlign: "left", listStyleType: "circle" }} className="routeIndications">
                 {this.state.routeIndications.length !== 0 ?
                   <div>
-                    <h4 style={{ color: "#f59622" }}>Distancia total nearest: {this.state.routesTotalDistanceNearestOnes} km.</h4>
-                    <h4 style={{ color: "#07c" }}>Distancia total ants: {this.state.routeTotalDistance} km.</h4>
+                    <h4 style={{ color: "#f59622" }}>Distancia total nearest: {this.state.routesTotalDistanceNearestOnes.toFixed(2)} km.</h4>
+                    <h4 style={{ color: "#07c" }}>Distancia total ants: {this.state.routeTotalDistance.toFixed(2)} km.</h4>
                     <h4>Ruta</h4>
                     {this.state.routeIndications[0].map((indication, i) => {
                       return <div style={{ marginLeft: "8%" }} key={i * this.state.routeTotalDistance}>
