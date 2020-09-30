@@ -157,8 +157,8 @@ class Sidebar extends Component {
           <hr />
           <div className="markers-container">
             <div className="switcher-markers-routes">
-              <button onClick={(e) => { this.setState({ showRoute: !this.state.showRoute }) }}>Markers</button>
-              <button onClick={(e) => { this.setState({ showRoute: !this.state.showRoute }) }}>Routes</button>
+              <button onClick={(e) => { this.setState({ showRoute: false }) }}>Markers</button>
+              <button onClick={(e) => { this.setState({ showRoute: true }) }}>Routes</button>
             </div>
             {this.state.showRoute ? <h3>Rutas e indicaciones</h3> : <h3>Lista de marcadores</h3>}
             {this.state.showRoute
@@ -191,7 +191,7 @@ class Sidebar extends Component {
                       </div>
                     })}
                   </div>
-                  : <h4 style={{ textAlign: "center" }}>No Hay rutas</h4>}
+                  : <h4 style={{ textAlign: "center" }}>No hay rutas</h4>}
               </ul>
               :
               <ul>
@@ -202,7 +202,7 @@ class Sidebar extends Component {
                       <i onClick={(e) => { this.directionsRenderer.setMap(null); this.props.handleDeleteMarker(i); }} className="fa fa-window-close"></i>
                     </li>
                   })
-                  : <li key="noDir">No hay ningún dirección cargada.</li>
+                  : <h4 style={{ textAlign: "center" }}>No hay ninguna marcador</h4>
                 }
               </ul>}
           </div>
